@@ -1,0 +1,6 @@
+# Este archivo le dice a ESLint qué archivos y carpetas ignorar.
+
+# Ignorar todos los archivos TypeScript en la carpeta src
+src/**/*.ts
+
+node_modules

@@ -42,23 +42,12 @@ export class AuthService {
       const finalUserObject = { id: userResponse._id.toString(), ...userResponse };
       delete finalUserObject._id;
 
-      // Función para transformar 'hijos' en 'submenus' recursivamente
-      function transformarMenus(menus) {
-        return menus?.map(menu => {
-          let submenus = menu.hijos ? transformarMenus(menu.hijos) : undefined;
-          // Si no hay hijos ni submenus, dejar como array vacío
-          if (!submenus) submenus = [];
-          const { hijos, ...rest } = menu;
-          return { ...rest, submenus };
-        }) || [];
-      }
-
       return {
         user: finalUserObject,
         permisos: permissions ? {
           NamePerfil: permissions.NamePerfil,
           DescripcionPerfil: permissions.DescripcionPerfil,
-          Menus: transformarMenus(permissions.Menus),
+          Menus: permissions.Menus,
         } : null,
         token: token,
       };

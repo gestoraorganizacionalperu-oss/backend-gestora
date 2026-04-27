@@ -13,7 +13,8 @@ import { MaestrosModule } from './features/maestros/maestros.module.js';
 import { MatrizProcesosModule } from './features/matriz-procesos/matrizprocesos.module.js';
 import { AsistenciaModule } from './features/asistencia/asistencia.module.js';
 import { ZktecoModule } from './features/zkteco/zkteco.module.js';
-import { ZktecoWebhookModule } from './features/zkteco-webhook/zkteco-webhook.module.js';
+
+import { SolicitudPermisosModule } from './features/solicitud-permisos/solicitud-permisos.module';
 
 @Module({
   imports: [
@@ -32,7 +33,7 @@ import { ZktecoWebhookModule } from './features/zkteco-webhook/zkteco-webhook.mo
     MatrizProcesosModule,
     AsistenciaModule,
     ZktecoModule,
-    ZktecoWebhookModule,
+    SolicitudPermisosModule,
   ],
   controllers: [AppController],
   providers: [AppService],

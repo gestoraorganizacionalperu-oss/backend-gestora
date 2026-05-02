@@ -7,6 +7,9 @@ import { AsistenciaRepository } from './asistencia.repository.js';
 import { AsistenciaService } from './asistencia.service.js';
 import { AsistenciaController } from './asistencia.controller.js';
 import { AsistenciaConfigController } from './asistencia-config.controller.js';
+import { HorarioTrabajador, HorarioTrabajadorSchema } from './schemas/horario-trabajador.schema';
+import { HorarioTrabajadorService } from './services/horario-trabajador.service';
+import { HorarioTrabajadorController } from './controllers/horario-trabajador.controller';
 
 @Module({
   imports: [
@@ -14,9 +17,10 @@ import { AsistenciaConfigController } from './asistencia-config.controller.js';
       { name: Trabajador.name, schema: TrabajadorSchema },
       { name: Asistencia.name, schema: AsistenciaSchema },
       { name: AsistenciaConfig.name, schema: AsistenciaConfigSchema },
+      { name: HorarioTrabajador.name, schema: HorarioTrabajadorSchema },
     ]),
   ],
-  controllers: [AsistenciaController, AsistenciaConfigController],
-  providers: [AsistenciaService, AsistenciaRepository],
+  controllers: [AsistenciaController, AsistenciaConfigController, HorarioTrabajadorController],
+  providers: [AsistenciaService, AsistenciaRepository, HorarioTrabajadorService],
 })
 export class AsistenciaModule {}

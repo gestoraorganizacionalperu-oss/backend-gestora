@@ -44,8 +44,10 @@ export class Adjunto {
   @Prop({ required: true })
   nombreArchivo: string;
 
+
   @Prop({ required: true })
   idGoogle: string;
+
 
   @Prop({ default: true })
   IsActive: boolean;

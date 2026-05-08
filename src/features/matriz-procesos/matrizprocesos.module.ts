@@ -14,7 +14,7 @@ import {
   TipoDocumentoSchema,
 } from '../../common/schemas/tipo-documento.schema.js';
 import { User, UserSchema } from '../../common/schemas/user.schema.js';
-import { GoogleStorageService } from '../../common/services/google-storage.service.js';
+// import { GoogleStorageService } from '../../common/services/google-storage.service.js'; // INHABILITADO: Google Storage
 import { ConfigModule } from '@nestjs/config';
 import { Puesto, PuestoSchema } from '../../common/schemas/puesto.schema.js';
 
@@ -31,6 +31,6 @@ import { Puesto, PuestoSchema } from '../../common/schemas/puesto.schema.js';
     ConfigModule, // Importamos ConfigModule para usar ConfigService
   ],
   controllers: [MatrizProcesosController],
-  providers: [MatrizProcesosService, MatrizProcesosRepository, GoogleStorageService],
+  providers: [MatrizProcesosService, MatrizProcesosRepository /*, GoogleStorageService*/], // INHABILITADO: Google Storage
 })
 export class MatrizProcesosModule {}

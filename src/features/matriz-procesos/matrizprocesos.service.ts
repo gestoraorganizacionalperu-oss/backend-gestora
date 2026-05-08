@@ -16,7 +16,6 @@ import { Company } from '../../common/schemas/company.schema';
 import { Macroproceso } from '../../common/schemas/matrizprocesos.schema';
 import { TipoDocumento } from '../../common/schemas/tipo-documento.schema';
 import { User } from '../../common/schemas/user.schema';
-import { GoogleStorageService } from '../../common/services/google-storage.service';
 import * as crypto from 'crypto';
 import * as path from 'path';
 import { Puesto } from '../../common/schemas/puesto.schema';
@@ -31,7 +30,6 @@ export class MatrizProcesosService {
     @InjectModel(Macroproceso.name) private readonly macroprocesoModel: Model<Macroproceso>,
     @InjectModel(User.name) private readonly userModel: Model<User>,
     @InjectModel(Puesto.name) private readonly puestoModel: Model<Puesto>,
-    private readonly googleStorageService: GoogleStorageService,
   ) {}
 
   async getMatriz(companyId: string, userId: string): Promise<any[]> {
@@ -174,11 +172,11 @@ export class MatrizProcesosService {
         const fileExtension = path.extname(adjunto.nombreArchivo);
         const gcsFileName = `${fileId}${fileExtension}`;
 
-        await this.googleStorageService.uploadFile(
-          adjunto.base64,
-          gcsFileName,
-          companyId,
-        );
+        // await this.googleStorageService.uploadFile(
+        //   adjunto.base64,
+        //   gcsFileName,
+        //   companyId,
+        // );
         adjuntosParaGuardar.push({
           nombreArchivo: adjunto.nombreArchivo,
           idGoogle: gcsFileName,
@@ -489,7 +487,7 @@ export class MatrizProcesosService {
       );
 
       for (const adjunto of adjuntosAEliminar) {
-        await this.googleStorageService.deleteFile(adjunto.idGoogle, companyId);
+        // await this.googleStorageService.deleteFile(adjunto.idGoogle, companyId);
       }
 
       // 3. Procesar la lista entrante
@@ -511,7 +509,7 @@ export class MatrizProcesosService {
           const fileExtension = path.extname(adjuntoReq.nombreArchivo);
           const gcsFileName = `${fileId}${fileExtension}`;
 
-          await this.googleStorageService.uploadFile(adjuntoReq.base64, gcsFileName, companyId);
+          // await this.googleStorageService.uploadFile(adjuntoReq.base64, gcsFileName, companyId);
 
           adjuntosFinales.push({
             nombreArchivo: adjuntoReq.nombreArchivo,
@@ -645,14 +643,14 @@ export class MatrizProcesosService {
     if (documento.adjuntos && documento.adjuntos.length > 0) {
       const adjuntosConBase64 = await Promise.all(
         documento.adjuntos.map(async (adjunto) => {
-          const base64 = await this.googleStorageService.downloadFileAsBase64(
-            adjunto.idGoogle,
-            companyId,
-          );
+          // const base64 = await this.googleStorageService.downloadFileAsBase64(
+          //   adjunto.idGoogle,
+          //   companyId,
+          // );
           return {
             nombreArchivo: adjunto.nombreArchivo,
             idGoogle: adjunto.idGoogle,
-            base64: base64, // Será null si el archivo no se encuentra en GCS
+            base64: null, // Será null si el archivo no se encuentra en GCS
           };
         }),
       );

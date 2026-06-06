@@ -15,6 +15,7 @@ import { AsistenciaModule } from './features/asistencia/asistencia.module.js';
 import { ZktecoModule } from './features/zkteco/zkteco.module.js';
 
 import { SolicitudPermisosModule } from './features/solicitud-permisos/solicitud-permisos.module';
+import { CtrlProduccionModule } from './features/ctrl-produccion/ctrl-produccion.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { SolicitudPermisosModule } from './features/solicitud-permisos/solicitud
     AsistenciaModule,
     ZktecoModule,
     SolicitudPermisosModule,
+    CtrlProduccionModule,
   ],
   controllers: [AppController],
   providers: [AppService],

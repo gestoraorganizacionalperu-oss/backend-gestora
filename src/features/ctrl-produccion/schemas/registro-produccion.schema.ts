@@ -15,6 +15,7 @@ export class RegistroProduccion {
   @Prop({ default: null })  horaFin: string;
   @Prop({ default: 0 })     logrados: number;
   @Prop({ default: 0 })     observados: number;
+  @Prop({ default: 0 })     duracionMinutos: number;
   @Prop({ default: '' })    observaciones: string;
   @Prop({ default: '' })    responsableId: string;
   @Prop({ default: 'pendiente' }) estado: string; // pendiente | en_progreso | completado

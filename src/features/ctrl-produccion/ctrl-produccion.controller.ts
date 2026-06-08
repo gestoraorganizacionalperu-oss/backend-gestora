@@ -29,6 +29,11 @@ export class CtrlProduccionController {
     return this.service.getRegistrosPorFecha(req.user.companyId, fecha);
   }
 
+  @Get('registros/rango')
+  getRegistrosPorRango(@Req() req, @Query('desde') desde: string, @Query('hasta') hasta: string) {
+    return this.service.getRegistrosPorRango(req.user.companyId, desde, hasta);
+  }
+
   @Post('registros')
   guardarRegistro(@Req() req, @Body() dto: GuardarRegistroDto) {
     return this.service.guardarRegistro(req.user.companyId, dto);

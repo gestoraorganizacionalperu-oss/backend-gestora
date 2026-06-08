@@ -50,6 +50,13 @@ const NUEVOS_MENUS = [
     Icono: 'Settings',
     ParentId: null,
   },
+  {
+    Id: 22,
+    Nombre: 'Reportes de Producción',
+    Ruta: '/reportes-produccion',
+    Icono: 'BarChart2',
+    ParentId: null,
+  },
 ];
 
 async function main() {

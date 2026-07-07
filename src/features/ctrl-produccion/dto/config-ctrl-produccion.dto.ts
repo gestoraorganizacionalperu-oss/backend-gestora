@@ -14,6 +14,12 @@ export class DiaValuesDto {
   @IsOptional()
   @IsString()
   cantPro?: string;
+
+  // Responsable asignado para ese día en particular (reemplaza el
+  // responsable único por fila que existía antes).
+  @IsOptional()
+  @IsString()
+  responsableId?: string;
 }
 
 export class FilaActividadDto {
@@ -28,10 +34,6 @@ export class FilaActividadDto {
 
   @IsString()
   subprocesoNombre: string;
-
-  @IsOptional()
-  @IsString()
-  responsableId?: string;
 
   @IsOptional()
   @ValidateNested()
@@ -68,10 +70,6 @@ export class FilaProyectoDto {
   @IsOptional()
   @IsString()
   descripcion?: string;
-
-  @IsOptional()
-  @IsString()
-  responsableId?: string;
 
   @IsOptional()
   @ValidateNested()

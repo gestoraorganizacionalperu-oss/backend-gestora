@@ -6,6 +6,8 @@ export type ConfigCtrlProduccionDocument = ConfigCtrlProduccion & Document;
 export class DiaValues {
   @Prop({ default: '' }) hProg: string;
   @Prop({ default: '' }) cantPro: string;
+  // El responsable ahora se asigna por día (antes era único por fila/actividad).
+  @Prop({ default: '' }) responsableId: string;
 }
 
 export class FilaActividad {
@@ -13,7 +15,6 @@ export class FilaActividad {
   @Prop({ required: true }) actividadNombre: string;
   @Prop({ required: true }) procesoNombre: string;
   @Prop({ required: true }) subprocesoNombre: string;
-  @Prop({ default: '' }) responsableId: string;
   @Prop({ type: DiaValues, default: () => ({}) }) lunes: DiaValues;
   @Prop({ type: DiaValues, default: () => ({}) }) martes: DiaValues;
   @Prop({ type: DiaValues, default: () => ({}) }) miercoles: DiaValues;
@@ -24,7 +25,6 @@ export class FilaActividad {
 
 export class FilaProyecto {
   @Prop({ default: '' }) descripcion: string;
-  @Prop({ default: '' }) responsableId: string;
   @Prop({ type: DiaValues, default: () => ({}) }) lunes: DiaValues;
   @Prop({ type: DiaValues, default: () => ({}) }) martes: DiaValues;
   @Prop({ type: DiaValues, default: () => ({}) }) miercoles: DiaValues;

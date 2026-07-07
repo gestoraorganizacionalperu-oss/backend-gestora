@@ -39,8 +39,11 @@ export class MatrizProcesosService {
       // Verificar perfil del usuario
       const user = await this.userModel.findById(userId).select('ProfileId').lean();
       
-      // Si es Responsable (ProfileId 3), aplicamos el filtro
-      if (user && user.ProfileId === 3) {
+      // Perfiles "jefe/gerente" (1=Super Administrador, 2=Administrador) ven
+      // todo sin filtrar. El resto (3=Responsable, 4=Observador, 5=Gestor
+      // 6=Trabajador) solo ve las actividades donde es responsable.
+      const PERFILES_SIN_FILTRO = [1, 2];
+      if (user && !PERFILES_SIN_FILTRO.includes(user.ProfileId)) {
         // 1. Obtener los IDs de los puestos donde el usuario es responsable
         const userPuestos = await this.puestoModel.find({
           'responsibles.UsuarioId': userId,

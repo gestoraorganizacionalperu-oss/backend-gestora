@@ -47,7 +47,8 @@ export class PuestosService {
   async findAllMof(companyId: string, userId: string) {
     const user = await this.userModel.findById(userId).select('ProfileId').lean();
     let filterUserId: string | undefined = undefined;
-    if (user && user.ProfileId === 3) {
+    const PERFILES_SIN_FILTRO = [1, 2];
+    if (user && !PERFILES_SIN_FILTRO.includes(user.ProfileId)) {
       filterUserId = userId;
     }
     return this.puestosRepository.findAllMof(companyId, filterUserId);

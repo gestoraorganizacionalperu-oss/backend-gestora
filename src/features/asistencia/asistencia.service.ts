@@ -9,8 +9,8 @@ import { CreateAsistenciaConfigDto, UpdateAsistenciaConfigDto } from './dto/asis
 export class AsistenciaService {
   constructor(private readonly asistenciaRepository: AsistenciaRepository) {}
 
-  async getTrabajadores() {
-    return this.asistenciaRepository.getTrabajadores();
+  async getTrabajadores(companyId: string) {
+    return this.asistenciaRepository.getTrabajadores(companyId);
   }
 
   async getTodasAsistencias(companyId: string) {
@@ -87,6 +87,32 @@ export class AsistenciaService {
       throw new NotFoundException(`No se encontró configuración para la empresa ${empresaId}.`);
     }
     return { data: config };
+  }
+
+  // ── Homologación Usuario <-> Trabajador ────────────────────────────
+  // Se llama desde UsersService al crear un Usuario marcado como
+  // "también es trabajador de planta". Nunca duplica: si ya existe un
+  // Trabajador con ese mismo documento en la misma empresa (por ejemplo,
+  // uno que entró por el sincronizador del reloj biométrico), lo vincula
+  // en vez de crear uno nuevo.
+  async crearOVincularTrabajador(datos: {
+    nombreCompleto: string;
+    nroDoc: string;
+    companyId: string;
+    puestoId?: string | null;
+  }): Promise<{ trabajador: any; creado: boolean }> {
+    const existente = await this.asistenciaRepository.buscarTrabajadorPorDocumento(datos.nroDoc, datos.companyId);
+    if (existente) {
+      return { trabajador: existente, creado: false };
+    }
+
+    const nuevo = await this.asistenciaRepository.crearTrabajador({
+      nombres: datos.nombreCompleto,
+      nro_doc: datos.nroDoc,
+      empresa_id: datos.companyId,
+      puesto: datos.puestoId ?? null,
+    });
+    return { trabajador: nuevo, creado: true };
   }
 
   async createConfig(dto: CreateAsistenciaConfigDto) {

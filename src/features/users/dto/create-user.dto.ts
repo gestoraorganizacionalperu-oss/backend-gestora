@@ -95,4 +95,15 @@ export class CreateUserDto {
   @IsString()
   @IsOptional()
   puestoId?: string;
+
+  @ApiProperty({
+    example: true,
+    description:
+      'Si es true y se envió un DNI, además de crear el Usuario se crea o vincula un registro en la colección `trabajador` (usado para marcar asistencia y asignar producción). Requiere que `dni` esté presente.',
+    required: false,
+    default: false,
+  })
+  @IsBoolean()
+  @IsOptional()
+  esTrabajador?: boolean;
 }

@@ -6,12 +6,14 @@ import { User, UserSchema } from '../../common/schemas/user.schema';
 import { UserRepository } from './user.repository';
 import { ProfilesModule } from '../profile/profiles.module';
 import { PuestosModule } from '../puestos/puestos.module';
+import { AsistenciaModule } from '../asistencia/asistencia.module.js';
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
     ProfilesModule,
     PuestosModule,
+    AsistenciaModule,
   ],
   controllers: [UsersController],
   providers: [UsersService, UserRepository],

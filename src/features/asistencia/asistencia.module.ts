@@ -22,5 +22,6 @@ import { HorarioTrabajadorController } from './controllers/horario-trabajador.co
   ],
   controllers: [AsistenciaController, AsistenciaConfigController, HorarioTrabajadorController],
   providers: [AsistenciaService, AsistenciaRepository, HorarioTrabajadorService],
+  exports: [AsistenciaService],
 })
 export class AsistenciaModule {}

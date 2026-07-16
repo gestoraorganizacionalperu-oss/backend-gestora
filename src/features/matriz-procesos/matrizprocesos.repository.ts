@@ -16,12 +16,15 @@ export class MatrizProcesosRepository {
   ) {}
 
   async findByCompanyId(companyId: string): Promise<Macroproceso[]> {
+    // Antes había un .populate() aquí para traer el Nombre del Puesto
+    // referenciado en 'puestos.id'. Se quitó porque, al cruzar 5 niveles
+    // de arreglos anidados (procesos.subprocesos.actividades.descripciones.
+    // puestos.id), Mongoose reconstruía mal el objeto lean y terminaba
+    // descartando campos hermanos como trabajadorId. El frontend ya
+    // resuelve el nombre del Puesto por su cuenta (puestosMap), así que
+    // no hace falta que el backend lo populate.
     return this.macroprocesoModel
       .find({ CompanyId: companyId, IsActive: true })
-      .populate({
-        path: 'procesos.subprocesos.actividades.descripciones.puestos.id',
-        select: 'Nombre',
-      })
       .lean();
   }
 

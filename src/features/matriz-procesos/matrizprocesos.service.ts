@@ -19,6 +19,7 @@ import { User } from '../../common/schemas/user.schema';
 import * as crypto from 'crypto';
 import * as path from 'path';
 import { Puesto } from '../../common/schemas/puesto.schema';
+import { Trabajador } from '../../common/schemas/trabajador.schema';
 
 @Injectable()
 export class MatrizProcesosService {
@@ -30,6 +31,7 @@ export class MatrizProcesosService {
     @InjectModel(Macroproceso.name) private readonly macroprocesoModel: Model<Macroproceso>,
     @InjectModel(User.name) private readonly userModel: Model<User>,
     @InjectModel(Puesto.name) private readonly puestoModel: Model<Puesto>,
+    @InjectModel(Trabajador.name) private readonly trabajadorModel: Model<Trabajador>,
   ) {}
 
   async getMatriz(companyId: string, userId: string): Promise<any[]> {
@@ -37,20 +39,31 @@ export class MatrizProcesosService {
       let matriz = await this.repository.findByCompanyId(companyId);
 
       // Verificar perfil del usuario
-      const user = await this.userModel.findById(userId).select('ProfileId').lean();
+      const user = await this.userModel.findById(userId).select('ProfileId Dni').lean();
       
       // Perfiles "jefe/gerente" (1=Super Administrador, 2=Administrador) ven
       // todo sin filtrar. El resto (3=Responsable, 4=Observador, 5=Gestor
       // 6=Trabajador) solo ve las actividades donde es responsable.
       const PERFILES_SIN_FILTRO = [1, 2];
       if (user && !PERFILES_SIN_FILTRO.includes(user.ProfileId)) {
-        // 1. Obtener los IDs de los puestos donde el usuario es responsable
-        const userPuestos = await this.puestoModel.find({
-          'responsibles.UsuarioId': userId,
-          CompanyId: companyId
-        }).select('_id').lean();
-        
-        const userPuestoIds = new Set(userPuestos.map(p => p._id.toString()));
+        // Conectamos al Trabajador correspondiente por DNI, para poder
+        // filtrar por trabajadorId -- el mismo que se asigna a cada
+        // actividad en Matriz de Procesos vía "Elegir por persona".
+        //
+        // NOTA: el mecanismo antiguo (Puesto.responsibles.UsuarioId) se quitó
+        // a propósito. Como varias personas pueden compartir el mismo Puesto
+        // genérico (ej. "Asistente"), ese mecanismo dejaba ver TODAS las
+        // actividades de ese Puesto compartido a cualquiera configurado ahí
+        // -- exactamente el problema de ambigüedad que trabajadorId vino a
+        // resolver. Usar ambos a la vez reintroducía la fuga.
+        let miTrabajadorId: string | null = null;
+        if (user.Dni) {
+          const miTrabajador = await this.trabajadorModel
+            .findOne({ nro_doc: user.Dni })
+            .select('_id')
+            .lean();
+          if (miTrabajador) miTrabajadorId = String(miTrabajador._id);
+        }
 
         // 2. Función recursiva para filtrar la matriz
         const filterMatrizRecursive = (nodes: any[], level: string): any[] => {
@@ -91,9 +104,7 @@ export class MatrizProcesosService {
               // Verificar si alguno de los puestos de la descripción corresponde al usuario
               if (node.puestos && Array.isArray(node.puestos)) {
                 return node.puestos.some((pRef: any) => {
-                  // pRef.id es el objeto populado, accedemos a su _id
-                  const pId = pRef.id && pRef.id._id ? pRef.id._id.toString() : null;
-                  return pId && userPuestoIds.has(pId);
+                  return !!(miTrabajadorId && pRef.trabajadorId != null && String(pRef.trabajadorId) === miTrabajadorId);
                 });
               }
               return false;
@@ -102,17 +113,22 @@ export class MatrizProcesosService {
           });
         };
 
-        matriz = filterMatrizRecursive(matriz, 'macroproceso');
+        matriz = miTrabajadorId ? filterMatrizRecursive(matriz, 'macroproceso') : [];
       }
 
       const processAndSort = (item: any) => {
         if (!item) return;
 
-        // Transformación de puestos (lógica original)
+        // Transformación de puestos: antes asumía que "id" venía poblado
+        // (populate) y reconstruía { id: p.id._id, nombre: p.id.Nombre },
+        // descartando en el camino cualquier otro campo -- incluido
+        // trabajadorId, que es justo el que necesitamos conservar. Ya no
+        // usamos populate(), así que "id" es directamente el ObjectId/string.
         if (item.puestos) {
-          item.puestos = item.puestos.map((p) =>
-            p.id ? { id: p.id._id, nombre: p.id.Nombre } : p,
-          );
+          item.puestos = item.puestos.map((p) => ({
+            id: p.id ? p.id.toString() : null,
+            trabajadorId: p.trabajadorId ?? null,
+          }));
         }
 
         // Recorrer recursivamente los niveles anidados

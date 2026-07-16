@@ -14,8 +14,13 @@ export class CtrlProduccionController {
 
   // ── Configuración ──────────────────────────────────
   @Get()
-  getConfig(@Req() req) {
-    return this.service.getConfig(req.user.companyId);
+  getConfig(@Req() req, @Query('semanaInicio') semanaInicio: string) {
+    return this.service.getConfig(req.user.companyId, semanaInicio);
+  }
+
+  @Get('rango')
+  getConfigsPorRango(@Req() req, @Query('desde') desde: string, @Query('hasta') hasta: string) {
+    return this.service.getConfigsPorRango(req.user.companyId, desde, hasta);
   }
 
   @Put()

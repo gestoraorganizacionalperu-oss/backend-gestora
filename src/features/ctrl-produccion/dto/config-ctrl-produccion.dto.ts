@@ -15,6 +15,14 @@ export class DiaValuesDto {
   @IsString()
   cantPro?: string;
 
+  @IsOptional()
+  @IsString()
+  horaInicio?: string;
+
+  @IsOptional()
+  @IsString()
+  horaFin?: string;
+
   // Responsable asignado para ese día en particular (reemplaza el
   // responsable único por fila que existía antes).
   @IsOptional()
@@ -103,6 +111,10 @@ export class FilaProyectoDto {
 }
 
 export class SaveConfigCtrlProduccionDto {
+  // Fecha del Lunes de la semana que se está guardando ("YYYY-MM-DD").
+  @IsString()
+  semanaInicio: string;
+
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => FilaActividadDto)

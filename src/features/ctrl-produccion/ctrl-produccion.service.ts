@@ -16,18 +16,50 @@ export class CtrlProduccionService {
   ) {}
 
   // ── Configuración ──────────────────────────────────────────────
-  async getConfig(companyId: string): Promise<ConfigCtrlProduccionDocument | null> {
-    return this.configModel.findOne({ companyId }).exec();
+  // Cada semana tiene su propio documento (identificado por companyId +
+  // semanaInicio, el Lunes de esa semana en formato "YYYY-MM-DD"). Antes
+  // había un único documento por empresa que se sobrescribía siempre.
+  async getConfig(companyId: string, semanaInicio: string): Promise<ConfigCtrlProduccionDocument | null> {
+    const doc = await this.configModel.findOne({ companyId, semanaInicio }).exec();
+    if (doc) return doc;
+
+    // Migración única: si esta empresa todavía no tiene NINGÚN documento
+    // con semanaInicio (o sea, no se ha migrado desde el modelo viejo de
+    // "un solo documento"), adoptamos ese documento viejo como si fuera
+    // el de la semana pedida, en vez de perder esos datos.
+    const yaMigrado = await this.configModel.exists({ companyId, semanaInicio: { $exists: true, $ne: null } });
+    if (!yaMigrado) {
+      const legado = await this.configModel.findOne({ companyId, semanaInicio: { $exists: false } }).exec();
+      if (legado) {
+        legado.semanaInicio = semanaInicio;
+        await legado.save();
+        return legado;
+      }
+    }
+    return null;
   }
 
   async saveConfig(companyId: string, dto: SaveConfigCtrlProduccionDto): Promise<ConfigCtrlProduccionDocument> {
-    const existing = await this.configModel.findOne({ companyId }).exec();
+    const existing = await this.configModel.findOne({ companyId, semanaInicio: dto.semanaInicio }).exec();
     if (existing) {
       existing.actividades = dto.actividades as any;
       existing.proyectoOtro = dto.proyectoOtro as any;
       return existing.save();
     }
     return new this.configModel({ companyId, ...dto }).save();
+  }
+
+  // Trae todos los documentos de semana que se superponen con el rango
+  // [desde, hasta] -- una semana "cuenta" si su Lunes cae hasta 6 días
+  // antes de "desde" (para no perder los últimos días de una semana que
+  // empezó justo antes del rango pedido).
+  async getConfigsPorRango(companyId: string, desde: string, hasta: string): Promise<ConfigCtrlProduccionDocument[]> {
+    const desdeDate = new Date(`${desde}T00:00:00`);
+    desdeDate.setDate(desdeDate.getDate() - 6);
+    const desdeMenos6 = desdeDate.toISOString().split('T')[0];
+    return this.configModel
+      .find({ companyId, semanaInicio: { $gte: desdeMenos6, $lte: hasta } })
+      .exec();
   }
 
   // ── Registros de ejecución ─────────────────────────────────────

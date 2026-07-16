@@ -39,7 +39,22 @@ export class AsistenciaRepository {
   }
 
   async updateHorarioTrabajador(id: string, data: { horario_ingreso?: string; hora_salida?: string }): Promise<Trabajador | null> {
-    return this.trabajadorModel.findByIdAndUpdate(id, data, { new: true }).lean();
+    // El _id de Trabajador es un entero simple (ej. 2), no un ObjectId --
+    // findByIdAndUpdate asume ObjectId por defecto y falla al convertir un
+    // string tipo "2". Usamos la colección nativa para evitar ese cast.
+    await this.trabajadorModel.collection.updateOne(
+      { _id: Number(id) } as any,
+      { $set: data },
+    );
+    return this.trabajadorModel.collection.findOne({ _id: Number(id) } as any) as any;
+  }
+
+  async updatePuestoTrabajador(id: string, puestoId: string | null): Promise<Trabajador | null> {
+    await this.trabajadorModel.collection.updateOne(
+      { _id: Number(id) } as any,
+      { $set: { puesto: puestoId } },
+    );
+    return this.trabajadorModel.collection.findOne({ _id: Number(id) } as any) as any;
   }
 
   async getConfigByEmpresa(empresaId: string): Promise<AsistenciaConfig | null> {

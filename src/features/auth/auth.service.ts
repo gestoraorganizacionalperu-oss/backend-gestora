@@ -33,6 +33,7 @@ export class AuthService {
         name: user.Name,
         userId: user._id.toString(), // ID del usuario como string
         profile: permissions?.NamePerfil || 'Sin Perfil Asignado', // Usar el nombre del perfil de los permisos
+        profileId: user.ProfileId, // ID numérico del perfil, usado por RolesGuard para restringir endpoints
         companyId: user.CompanyId,
       };
       const token = this.jwtService.sign(payload);

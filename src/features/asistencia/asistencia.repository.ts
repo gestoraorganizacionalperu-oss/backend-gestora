@@ -13,8 +13,8 @@ export class AsistenciaRepository {
     @InjectModel(AsistenciaConfig.name) private configModel: Model<AsistenciaConfigDocument>,
   ) {}
 
-  async getTrabajadores(): Promise<Trabajador[]> {
-    return this.trabajadorModel.find().lean();
+  async getTrabajadores(companyId: string): Promise<Trabajador[]> {
+    return this.trabajadorModel.find({ empresa_id: companyId }).lean();
   }
 
   async getTodasAsistencias(companyId: string): Promise<Asistencia[]> {

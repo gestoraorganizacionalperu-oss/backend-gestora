@@ -15,8 +15,8 @@ export class AsistenciaController {
   constructor(private readonly asistenciaService: AsistenciaService) {}
 
   @Get('trabajadores')
-  getTrabajadores() {
-    return this.asistenciaService.getTrabajadores();
+  getTrabajadores(@Req() req) {
+    return this.asistenciaService.getTrabajadores(req.user.companyId);
   }
 
   @Get('todas')

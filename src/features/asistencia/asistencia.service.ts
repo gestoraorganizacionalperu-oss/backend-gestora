@@ -9,8 +9,8 @@ import { CreateAsistenciaConfigDto, UpdateAsistenciaConfigDto } from './dto/asis
 export class AsistenciaService {
   constructor(private readonly asistenciaRepository: AsistenciaRepository) {}
 
-  async getTrabajadores() {
-    return this.asistenciaRepository.getTrabajadores();
+  async getTrabajadores(companyId: string) {
+    return this.asistenciaRepository.getTrabajadores(companyId);
   }
 
   async getTodasAsistencias(companyId: string) {

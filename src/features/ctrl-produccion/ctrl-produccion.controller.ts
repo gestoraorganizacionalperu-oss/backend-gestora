@@ -1,6 +1,8 @@
 import { Controller, Get, Put, Post, Body, Query, UseGuards, Req } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard.js';
+import { RolesGuard } from '../../common/guards/roles.guard.js';
+import { Roles } from '../../common/decorators/roles.decorator.js';
 import { CtrlProduccionService } from './ctrl-produccion.service';
 import { SaveConfigCtrlProduccionDto } from './dto/config-ctrl-produccion.dto';
 import { GuardarRegistroDto } from './dto/registro-produccion.dto';
@@ -24,6 +26,8 @@ export class CtrlProduccionController {
   }
 
   @Put()
+  @UseGuards(RolesGuard)
+  @Roles(1, 2) // Super Administrador, Administrador — igual que PERFILES_EDITORES en el frontend
   saveConfig(@Req() req, @Body() dto: SaveConfigCtrlProduccionDto) {
     return this.service.saveConfig(req.user.companyId, dto);
   }

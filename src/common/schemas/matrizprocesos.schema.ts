@@ -1,11 +1,19 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Schema as MongooseSchema, Types } from 'mongoose';
 
-// --- Esquema para Puesto (solo referencia al _id del Puesto) ---
+// --- Esquema para Puesto (referencia al _id del Puesto + opcionalmente
+// qué Trabajador específico ocupa ese Puesto en esta actividad) ---
 @Schema({ _id: false })
 export class PuestoRef {
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Puesto' })
   id: Types.ObjectId;
+
+  // ID del Trabajador (colección `trabajador`, _id numérico simple) que
+  // específicamente ocupa este Puesto para esta actividad -- necesario
+  // porque un mismo Puesto (ej. "Asistente") puede tener varias personas
+  // asignadas, y sin esto no había forma de saber cuál de ellas era.
+  @Prop({ type: MongooseSchema.Types.Mixed, default: null })
+  trabajadorId: number | string | null;
 }
 export const PuestoRefSchema = SchemaFactory.createForClass(PuestoRef);
 

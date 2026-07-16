@@ -2,6 +2,7 @@ import { Injectable, NotFoundException, BadRequestException } from '@nestjs/comm
 import { AsistenciaRepository } from './asistencia.repository.js';
 import { RegistrarAsistenciaDto } from './dto/registrar-asistencia.dto.js';
 import { UpdateHorarioDto } from './dto/update-horario.dto.js';
+import { UpdatePuestoDto } from './dto/update-puesto.dto.js';
 import { CreateAsistenciaConfigDto, UpdateAsistenciaConfigDto } from './dto/asistencia-config.dto.js';
 
 @Injectable()
@@ -66,6 +67,14 @@ export class AsistenciaService {
 
   async actualizarHorarioTrabajador(id: string, dto: UpdateHorarioDto) {
     const trabajador = await this.asistenciaRepository.updateHorarioTrabajador(id, dto);
+    if (!trabajador) {
+      throw new NotFoundException(`Trabajador con ID ${id} no encontrado.`);
+    }
+    return { data: trabajador };
+  }
+
+  async actualizarPuestoTrabajador(id: string, dto: UpdatePuestoDto) {
+    const trabajador = await this.asistenciaRepository.updatePuestoTrabajador(id, dto.puesto ?? null);
     if (!trabajador) {
       throw new NotFoundException(`Trabajador con ID ${id} no encontrado.`);
     }

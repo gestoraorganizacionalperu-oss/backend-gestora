@@ -4,6 +4,7 @@ import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard.js';
 import { AsistenciaService } from './asistencia.service.js';
 import { RegistrarAsistenciaDto } from './dto/registrar-asistencia.dto.js';
 import { UpdateHorarioDto } from './dto/update-horario.dto.js';
+import { UpdatePuestoDto } from './dto/update-puesto.dto.js';
 import { CreateAsistenciaConfigDto, UpdateAsistenciaConfigDto } from './dto/asistencia-config.dto.js';
 
 @ApiTags('Asistencia')
@@ -32,4 +33,10 @@ export class AsistenciaController {
   actualizarHorario(@Param('id') id: string, @Body() dto: UpdateHorarioDto) {
     return this.asistenciaService.actualizarHorarioTrabajador(id, dto);
   }
+
+  @Put('trabajadores/:id/puesto')
+  actualizarPuesto(@Param('id') id: string, @Body() dto: UpdatePuestoDto) {
+    return this.asistenciaService.actualizarPuestoTrabajador(id, dto);
+  }
 }
+

@@ -12,6 +12,11 @@ import {
 class PuestoRefDto {
   @IsMongoId()
   id: string;
+
+  // ID del Trabajador (colección `trabajador`, _id numérico simple).
+  // Puede venir como número o string según cómo lo mande el frontend.
+  @IsOptional()
+  trabajadorId?: number | string | null;
 }
 
 class DescripcionDto {

@@ -17,6 +17,7 @@ import { User, UserSchema } from '../../common/schemas/user.schema.js';
 // import { GoogleStorageService } from '../../common/services/google-storage.service.js'; // INHABILITADO: Google Storage
 import { ConfigModule } from '@nestjs/config';
 import { Puesto, PuestoSchema } from '../../common/schemas/puesto.schema.js';
+import { Trabajador, TrabajadorSchema } from '../../common/schemas/trabajador.schema.js';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { Puesto, PuestoSchema } from '../../common/schemas/puesto.schema.js';
       { name: TipoDocumento.name, schema: TipoDocumentoSchema },
       { name: User.name, schema: UserSchema },
       { name: Puesto.name, schema: PuestoSchema },
+      { name: Trabajador.name, schema: TrabajadorSchema },
     ]),
     ConfigModule, // Importamos ConfigModule para usar ConfigService
   ],

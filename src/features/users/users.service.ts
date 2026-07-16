@@ -12,12 +12,14 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { UserRepository } from './user.repository';
 import { ProfilesService } from '../profile/profiles.service';
 import { PuestosService } from '../puestos/puestos.service';
+import { AsistenciaService } from '../asistencia/asistencia.service.js';
 @Injectable()
 export class UsersService {
   constructor(
     private readonly userRepository: UserRepository,
     private readonly profilesService: ProfilesService,
     private readonly puestosService: PuestosService,
+    private readonly asistenciaService: AsistenciaService,
   ) {}
 
   // Transforma el documento de la BD al formato esperado por el frontend
@@ -63,8 +65,15 @@ export class UsersService {
     companyId: string,
     createdBy: string,
   ): Promise<any> {
-    const { email, username, password, profileId, hasCredentials, dni, puestoId } =
+    const { email, username, password, profileId, hasCredentials, dni, puestoId, esTrabajador } =
       createUserDto;
+
+    // Si se marcó "también es trabajador de planta", necesitamos un DNI
+    // para poder crear/vincular el registro en `trabajador` -- sin
+    // documento no hay con qué identificarlo ahí.
+    if (esTrabajador && !dni) {
+      throw new BadRequestException('Para marcar "también es trabajador" se requiere ingresar un DNI.');
+    }
 
     // Validar que el puesto exista y pertenezca a la empresa antes de crear el usuario
     if (puestoId) {
@@ -119,6 +128,21 @@ export class UsersService {
       }, companyId);
     }
 
+    // Homologación Usuario <-> Trabajador: si se marcó el checkbox, busca
+    // un Trabajador existente con ese mismo DNI en la empresa (por si vino
+    // del sincronizador del reloj biométrico) y lo vincula, o crea uno
+    // nuevo si no existe. Nunca duplica.
+    let trabajadorVinculado: { id: any; creado: boolean } | null = null;
+    if (esTrabajador && dni) {
+      const { trabajador, creado } = await this.asistenciaService.crearOVincularTrabajador({
+        nombreCompleto: `${createUserDto.name} ${createUserDto.lastName}`.trim(),
+        nroDoc: dni,
+        companyId,
+        puestoId: puestoId ?? null,
+      });
+      trabajadorVinculado = { id: (trabajador as any)._id, creado };
+    }
+
     const response = this.transformUser(newUser);
 
     // Devolvemos solo los campos especificados en la documentación para el 201 Created
@@ -132,6 +156,7 @@ export class UsersService {
       companyId: response.companyId,
       createdAt: response.createdAt,
       createdBy: response.createdBy,
+      trabajadorVinculado,
     };
   }
 

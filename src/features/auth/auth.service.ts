@@ -16,11 +16,11 @@ export class AuthService {
     private permissionModel: Model<PermissionDocument>,
   ) {}
 
-  async login(email: string, pass: string) {
+  async login(identificador: string, pass: string) {
     try {
-      const user = await this.authRepository.findUserByCredentials(email, pass);
+      const user = await this.authRepository.findUserByCredentials(identificador, pass);
       if (!user) {
-        this.logger.warn(`Credenciales inválidas para: ${email}`);
+        this.logger.warn(`Credenciales inválidas para: ${identificador}`);
         throw new UnauthorizedException('Credenciales inválidas.');
       }
 
@@ -54,7 +54,7 @@ export class AuthService {
       };
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : JSON.stringify(error);
-      this.logger.error(`Error en login para ${email}: ${errorMessage}`);
+      this.logger.error(`Error en login para ${identificador}: ${errorMessage}`);
       if (error instanceof UnauthorizedException) throw error;
       throw new InternalServerErrorException('Ocurrió un error inesperado durante el login.');
     }

@@ -6,8 +6,12 @@ import { User, UserDocument } from '../../common/schemas/user.schema';
 export class AuthRepository {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
-  async findUserByCredentials(email: string, pass: string): Promise<any> {
-    const user = await this.userModel.findOne({ Email: email });
+  // `identificador` puede ser el Email o el Username del usuario -- se
+  // permite loguearse con cualquiera de los dos.
+  async findUserByCredentials(identificador: string, pass: string): Promise<any> {
+    const user = await this.userModel.findOne({
+      $or: [{ Email: identificador }, { Username: identificador }],
+    });
     if (!user) {
       return null;
     }

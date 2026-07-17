@@ -28,6 +28,11 @@ export class FilaActividad {
 }
 
 export class FilaProyecto {
+  // Antes no existía este id porque solo podía haber UN proyecto/otro por
+  // semana (un objeto suelto). Ahora que son varios (una lista), cada uno
+  // necesita su propio identificador para poder editarlo/borrarlo sin
+  // afectar a los demás -- igual que actividadId en FilaActividad.
+  @Prop({ required: true }) id: string;
   @Prop({ default: '' }) descripcion: string;
   @Prop({ type: DiaValues, default: () => ({}) }) lunes: DiaValues;
   @Prop({ type: DiaValues, default: () => ({}) }) martes: DiaValues;
@@ -52,8 +57,8 @@ export class ConfigCtrlProduccion {
   @Prop({ type: [Object], default: [] })
   actividades: FilaActividad[];
 
-  @Prop({ type: Object, default: () => ({}) })
-  proyectoOtro: FilaProyecto;
+  @Prop({ type: [Object], default: [] })
+  proyectosOtros: FilaProyecto[];
 }
 
 export const ConfigCtrlProduccionSchema = SchemaFactory.createForClass(ConfigCtrlProduccion);

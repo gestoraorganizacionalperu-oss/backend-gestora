@@ -119,6 +119,12 @@ export class PuestosController {
   @Get(':id')
   @ApiOperation({ summary: 'Obtener un puesto por su ID' })
   @ApiParam({ name: 'id', description: 'ID del puesto a obtener', type: String, example: '65f5f5a1b2c3d4e5f6a7b1c2' })
+  @ApiQuery({
+    name: 'incluirInactivo',
+    description: 'Si es "true", devuelve el puesto aunque esté desactivado (uso interno: mostrar asignaciones históricas de la Matriz de Procesos que apuntan a un puesto ya inactivo)',
+    required: false,
+    type: String,
+  })
   @ApiResponse({
     status: 200,
     description: 'Detalles del puesto.',
@@ -141,9 +147,9 @@ export class PuestosController {
   })
   @ApiResponse({ status: 401, description: 'No autorizado.', schema: { example: { message: 'Unauthorized', statusCode: 401 } } })
   @ApiResponse({ status: 404, description: 'Puesto no encontrado.', schema: { example: { message: 'Puesto con ID #... no encontrado.', error: 'Not Found', statusCode: 404 } } })
-  findOne(@Param('id') id: string, @Req() req) {
+  findOne(@Param('id') id: string, @Req() req, @Query('incluirInactivo') incluirInactivo?: string) {
     const companyId = req.user.companyId;
-    return this.puestosService.findOne(id, companyId);
+    return this.puestosService.findOne(id, companyId, incluirInactivo === 'true');
   }
 
   @Put(':id')

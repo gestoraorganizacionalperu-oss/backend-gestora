@@ -43,7 +43,7 @@ export class CtrlProduccionService {
     const existing = await this.configModel.findOne({ companyId, semanaInicio: dto.semanaInicio }).exec();
     if (existing) {
       existing.actividades = dto.actividades as any;
-      existing.proyectoOtro = dto.proyectoOtro as any;
+      existing.proyectosOtros = dto.proyectosOtros as any;
       return existing.save();
     }
     return new this.configModel({ companyId, ...dto }).save();

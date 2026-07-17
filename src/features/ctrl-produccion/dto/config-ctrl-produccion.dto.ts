@@ -75,6 +75,9 @@ export class FilaActividadDto {
 }
 
 export class FilaProyectoDto {
+  @IsString()
+  id: string;
+
   @IsOptional()
   @IsString()
   descripcion?: string;
@@ -120,7 +123,8 @@ export class SaveConfigCtrlProduccionDto {
   @Type(() => FilaActividadDto)
   actividades: FilaActividadDto[];
 
-  @ValidateNested()
+  @IsArray()
+  @ValidateNested({ each: true })
   @Type(() => FilaProyectoDto)
-  proyectoOtro: FilaProyectoDto;
+  proyectosOtros: FilaProyectoDto[];
 }

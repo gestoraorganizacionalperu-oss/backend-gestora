@@ -9,7 +9,10 @@ export class RegistroProduccion {
   @Prop({ required: true }) actividadId: string;
   @Prop({ required: true }) actividadNombre: string;
   @Prop({ required: true }) procesoNombre: string;
-  @Prop({ required: true }) subprocesoNombre: string;
+  // Ya no es obligatorio: las actividades de "Proyectos/Otros" (fuera de
+  // la Matriz de Procesos) no tienen subproceso, y se guardan con este
+  // campo vacío a propósito.
+  @Prop({ default: '' }) subprocesoNombre: string;
   @Prop({ required: true }) fecha: string;       // YYYY-MM-DD
   @Prop({ default: null })  horaInicio: string;  // HH:MM:SS
   @Prop({ default: null })  horaFin: string;

@@ -66,8 +66,8 @@ export class PuestosService {
     return this.puestosRepository.findMofMasivo(puestoIds, companyId);
   }
 
-  async findOne(puestoId: string, companyId: string) {
-    const puesto = await this.puestosRepository.findOne(puestoId, companyId);
+  async findOne(puestoId: string, companyId: string, incluirInactivo = false) {
+    const puesto = await this.puestosRepository.findOne(puestoId, companyId, incluirInactivo);
     if (!puesto) {
       throw new NotFoundException(`Puesto con ID #${puestoId} no encontrado.`);
     }

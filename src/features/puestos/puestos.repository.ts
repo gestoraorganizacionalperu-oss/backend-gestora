@@ -278,8 +278,12 @@ export class PuestosRepository {
     ]).exec();
   }
 
-  async findOne(puestoId: string, companyId: string): Promise<PuestoDocument | null> {
-    return this.puestoModel.findOne({ _id: puestoId, CompanyId: companyId, IsActive: true }).exec();
+  async findOne(puestoId: string, companyId: string, incluirInactivo = false): Promise<PuestoDocument | null> {
+    const filtro: Record<string, any> = { _id: puestoId, CompanyId: companyId };
+    if (!incluirInactivo) {
+      filtro.IsActive = true;
+    }
+    return this.puestoModel.findOne(filtro).exec();
   }
 
   async update(puestoId: string, companyId: string, puestoUpdates: Partial<Puesto>): Promise<PuestoDocument | null> {
